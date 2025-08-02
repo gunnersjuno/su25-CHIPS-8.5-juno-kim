@@ -4,10 +4,16 @@
 
 <h2>Search in TMDb</h2>
 <%# Part 5 here %>
+<% flash.each do |key, value| %>
+  <div class="alert alert-<%= key %> alert-dismissible fade show" role="alert">
+    <%= value %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
 
 <div class="search-container">
 <%# Part 1 here %>
-<%= form_tag <%# fill in here #%> do %>
+<%= form_tag search_path, method: :get, id: 'tmdb_form' do %>
     <label for="searchMovieName">Movie Name</label>
     <%= text_field_tag 'title', nil, class: "form-control", id: "movie_title_field", placeholder: "Manhunter", id: "movie_title_field"%> 
     <label for="searchReleaseDateField">Release Year</label>
@@ -22,7 +28,48 @@
     <%= radio_button_tag 'language', 'all', true, class: "form-check-input" %>
     <label class="form-check-label" for="language_all">All Languages</label>
   </div>
-  <%= submit_tag 'Search', id: 'tmdb_submit', class: 'btn btn-warning col-2' %>
-  
+  <%= submit_tag 'Search', id: 'tmdb_submit', class: 'btn btn-primary' %>
+  <%= link_to 'Back to movie list', movies_path(@movie), class: 'btn btn-primary col-2' %>
 <% end %>
 </div>
+<br>
+<h2>Search Results</h2>
+
+<% if !@movies.nil? %>
+  <table id = "search_movies" class = "table">
+    <thead>
+      <tr>
+        <th>Movie Title</th>
+        <th>Rating</th>
+        <th>Release Date</th>
+        <th>Synopsis</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @movies.each do |movie| %>
+        <tr>
+          <td>
+            <%= movie[:title] %>
+          </td>
+          <td>
+            <%= movie[:rating] %>
+          </td>
+          <td>
+            <%= movie[:release_date] %>
+          </td>
+          <td>
+            <%= form_tag add_movie_path, method: :post do %>
+              <%= hidden_field_tag :title, movie[:title] %>
+              <%= hidden_field_tag :release_date, movie[:release_date] %>
+              <%= hidden_field_tag :rating, movie[:rating] %>
+              <%= submit_tag "Add Movie", class:'btn btn-primary' %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
+
+<br>
+
